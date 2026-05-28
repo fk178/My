@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>治愈系邀约</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 浅粉紫梦幻背景 */
+        body {
+            background: linear-gradient(135deg, #f9e6f5 0%,#e9d8f7 50%,#e1d0f5 100%);
+            min-height: 100vh;
+            font-family: 'Ma Shan Zheng', cursive;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 页面容器 */
+        .page {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 75vw;
+            max-width: 650px;
+            text-align: center;
+            display: none;
+            z-index: 10;
+        }
+        .page.active {
+            display: block;
+        }
+
+        /* 信封样式 */
+        .envelope {
+            width: 100%;
+            height: 320px;
+            background: #fff;
+            border-radius: 24px;
+            border: 4px solid #d4b8e8;
+            position: relative;
+            margin: 0 auto 20px;
+            box-shadow: 0 8px 30px rgba(212,184,232,0.4);
+        }
+        .envelope::before {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            width: calc(100% + 8px);
+            height: 130px;
+            background: #f3e5f5;
+            border-radius: 22px 22px 0 0;
+            clip-path: polygon(0 0,50% 48%,100% 0);
+            border: 4px solid #d4b8e8;
+        }
+
+        /* 按钮全部放在信封中间 */
+        .btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            padding: 16px 44px;
+            background: #d4b8e8;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            color: #4a3c68;
+            cursor: pointer;
+            z-index: 11;
+        }
+
+        /* 结尾圆形按钮 + 呼吸放大缩小动画 */
+        .btn-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            background: #d4b8e8;
+            border: 3px solid #bfa8e0;
+            animation: breath 1.6s infinite alternate;
+            cursor: pointer;
+            z-index: 11;
+        }
+        @keyframes breath {
+            0% { transform: translate(-50%,-50%) scale(1); }
+            100% { transform: translate(-50%,-50%) scale(1.15); }
+        }
+
+        /* 治愈文字 + 下划线 */
+        .content {
+            font-size: 19px;
+            line-height: 2;
+            color: #4a3c68;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #bfa8e0;
+            text-align: left;
+            white-space: pre-line;
+        }
+
+        /* 3D立体气球 + 绳子 + 绑定图标 */
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 52px;
+            height: 66px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff, transparent 40%), var(--color);
+            box-shadow: inset -8px -8px 16px rgba(0,0,0,0.2);
+            animation: fly 7s linear forwards;
+            z-index: 1;
+        }
+        .balloon::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: 50%;
+            width: 2px;
+            height: 100px;
+            background: #ccc;
+            transform: translateX(-50%);
+        }
+        .icon-tie {
+            position: absolute;
+            font-size: 22px;
+            bottom: -200px;
+            animation: fly 7s linear forwards;
+            z-index: 1;
+        }
+        @keyframes fly {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-120vh); opacity: 0; }
+        }
+
+        /* 信封淡出 */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1.4s ease;
+        }
+
+        /* 手绘艺术风背景小图标 */
+        .hand-icon {
+            position: absolute;
+            font-size: 26px;
+            opacity: 0.8;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.1));
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- 背景音乐 -->
+    <audio id="bgm" loop>
+        <source src="https://dl.musiclipy.com/download/mp3/gentle-piano.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- 手绘艺术风背景图标 -->
+    <div class="hand-icon" style="top:7%;left:10%">🍓</div>
+    <div class="hand-icon" style="top:14%;right:11%">🧸</div>
+    <div class="hand-icon" style="top:24%;left:16%">📖</div>
+    <div class="hand-icon" style="top:32%;right:9%">✏️</div>
+    <div class="hand-icon" style="top:48%;left:8%">🍰</div>
+    <div class="hand-icon" style="top:58%;right:16%">🐰</div>
+    <div class="hand-icon" style="bottom:20%;left:14%">🐱</div>
+    <div class="hand-icon" style="bottom:28%;right:12%">🍪</div>
+    <div class="hand-icon" style="bottom:12%;left:24%">🖍️</div>
+    <div class="hand-icon" style="bottom:38%;right:22%">🐻</div>
+
+    <!-- 第1页 -->
+    <div class="page active" id="p1">
+        <div class="envelope">
+            <button class="btn" onclick="playMusic();go(2)">打开</button>
+        </div>
+    </div>
+
+    <!-- 第2页 -->
+    <div class="page" id="p2">
+        <div class="envelope">
+            <button class="btn" onclick="go(3)">继续阅览</button>
+        </div>
+        <div class="content">不知不觉，跟你已经认识整整一年多了。虽然平日里不会频繁闲聊，但每次和你聊天都觉得特别舒坦、有烦恼也有欢喜，这种不用刻意维持、却始终真诚的相处，真是特别难得。</div>
+    </div>
+
+    <!-- 第3页 -->
+    <div class="page" id="p3">
+        <div class="envelope">
+            <button class="btn" onclick="go(4)">继续阅览</button>
+        </div>
+        <div class="content">话说回来咱们认识的方式有点悬哈哈，自己从没有跟一个陌生人聊这么久的，算是破例了，一直以来都很珍惜能这么有耐心聊天的朋友。相处这么久，觉得你是一个可爱、通透又治愈的人，偶尔会有点小小的玻璃心。因为快到暑期了，现在规划去哪实习时间有点紧，预计有充足时间外出也就在端午节的后几天吧，我想以朋友的身份邀你线下见个面，没有别的想法，只是单纯希望见一下本尊哈。</div>
+    </div>
+
+    <!-- 第4页 -->
+    <div class="page" id="p4">
+        <div class="envelope">
+            <button class="btn" onclick="go(5)">继续阅览</button>
+        </div>
+        <div class="content">如果天气好，我想找个合适的位置，最好是两个人出发都比较近的，一起坐坐、聊聊天，随便说说日常琐事和生活趣事，轻松自在就好。不用有压力，不用紧张，就当和熟悉的老朋友线下碰面相聚。当然，如果有东西可以教我，那自然是求之不得了嘿嘿</div>
+    </div>
+
+    <!-- 第5页 -->
+    <div class="page" id="p5">
+        <div class="envelope">
+            <button class="btn-circle" onclick="finish()"></button>
+        </div>
+        <div class="content">如果你时间方便、不介意的话，可以说说你的想法。一切都以你的感受为先，尊重你的决定！</div>
+    </div>
+
+    <script>
+        // 音乐播放（点击第一次按钮就响）
+        const bgm = document.getElementById('bgm');
+        function playMusic() {
+            bgm.volume = 0.4;
+            bgm.play();
+        }
+
+        // 分页切换
+        function go(num) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('p'+num).classList.add('active');
+        }
+
+        // 结束动画：信封消失 + 3D气球带绳子+图标飞起
+        function finish() {
+            document.getElementById('p5').classList.add('fade-out');
+            
+            setInterval(()=>{
+                const colors = ['#ff9aa9','#85cffc','#9af8ec','#ffda67','#d8affc','#ffb4da'];
+                const color = colors[Math.floor(Math.random()*colors.length)];
+                
+                // 3D气球
+                const b = document.createElement('div');
+                b.className = 'balloon';
+                b.style.setProperty('--color', color);
+                b.style.left = Math.random()*88 + '%';
+                document.body.appendChild(b);
+                
+                // 绳子绑定的图标
+                const icons = ['🎁','🍬','🧸','🍪','🍰','🐰','✏️'];
+                const t = document.createElement('div');
+                t.className = 'icon-tie';
+                t.innerText = icons[Math.floor(Math.random()*icons.length)];
+                t.style.left = b.style.left;
+                document.body.appendChild(t);
+                
+                // 自动清理
+                setTimeout(()=>{b.remove();t.remove();},7000);
+            },1100);
+        }
+    </script>
+</body>
+</html>
